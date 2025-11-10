@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vite-build
-          path: frontend/dist
+          path: admin-dashboard/dist
 
   # ============================
   # 🚀 Étape 2 : Déploiement du Frontend sur le VPS
