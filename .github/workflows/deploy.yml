@@ -60,6 +60,11 @@ jobs:
           echo "${{ secrets.VPS_KEY }}" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
 
+      - name: vérifier le format de la clé SSH
+        run: |
+          head -n 3 /tmp/deploy_key
+          tail -n 3 /tmp/deploy_key    
+
       - name: Debug vérifier les secrets
         run: |
           echo "USER=${{ secrets.VPS_USER }}"
