@@ -59,6 +59,8 @@ jobs:
         run: |
           echo "${{ secrets.VPS_KEY }}" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
+          head -n 3 /tmp/deploy_key
+          tail -n 3 /tmp/deploy_key
 
       - name: vérifier le format de la clé SSH
         run: |
