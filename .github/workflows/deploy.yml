@@ -82,7 +82,7 @@ jobs:
           ssh -i /tmp/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "pm2 reload frontend || pm2 start 'npx serve -s ${{ secrets.VPS_PATH_FRONT }}' --name frontend"
 
   # ============================
-  # ⚙️ Étape 3 : Déploiement du Backend sur le VPS n
+  # ⚙️ Étape 3 : Déploiement du Backend sur le VPS
   # ============================
   deploy-backend:
     runs-on: ubuntu-latest
