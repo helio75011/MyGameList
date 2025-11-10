@@ -1,0 +1,99 @@
+name: 🚀 Deploy Frontend (Vite) and Backend (Node.js) to VPS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # ============================
+  # 🏗️ Étape 1 : Build du Frontend Vite
+  # ============================
+  build-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧭 Checkout du dépôt
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Installer Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 📦 Installer les dépendances du frontend
+        run: |
+          cd frontend
+          npm ci
+
+      - name: 🏗️ Build du frontend avec Vite
+        run: |
+          cd frontend
+          npm run build
+
+      - name: 📤 Sauvegarder le build comme artefact temporaire
+        uses: actions/upload-artifact@v4
+        with:
+          name: vite-build
+          path: frontend/dist
+
+  # ============================
+  # 🚀 Étape 2 : Déploiement du Frontend sur le VPS
+  # ============================
+  deploy-frontend:
+    needs: build-frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧭 Checkout du dépôt
+        uses: actions/checkout@v3
+
+      - name: 📥 Télécharger l'artefact du build
+        uses: actions/download-artifact@v4
+        with:
+          name: vite-build
+          path: dist
+
+      - name: 🔐 Préparer la clé SSH
+        run: |
+          echo "${{ secrets.VPS_KEY }}" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+
+      - name: 📦 Déployer le frontend via rsync
+        run: |
+          rsync -avz -e "ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no" \
+          dist/ \
+          ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PATH_FRONT }}
+
+      - name: 🔁 Relancer le service frontend avec PM2
+        run: |
+          ssh -i /tmp/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+          "pm2 reload frontend || pm2 start 'npx serve -s ${{ secrets.VPS_PATH_FRONT }}' --name frontend"
+
+  # ============================
+  # ⚙️ Étape 3 : Déploiement du Backend sur le VPS
+  # ============================
+  deploy-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧭 Checkout du dépôt
+        uses: actions/checkout@v3
+
+      - name: 🔐 Préparer la clé SSH
+        run: |
+          echo "${{ secrets.VPS_KEY }}" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+
+      - name: 📦 Déployer le backend via rsync
+        run: |
+          rsync -avz -e "ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no" \
+          backend/ \
+          ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PATH_BACK }}
+
+      - name: 🔁 Installer dépendances & redémarrer le backend via PM2
+        run: |
+          ssh -i /tmp/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            cd ${{ secrets.VPS_PATH_BACK }}
+            npm ci --omit=dev
+            pm2 reload backend || pm2 start index.js --name backend
+          EOF
