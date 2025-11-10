@@ -27,7 +27,7 @@ jobs:
 
       - name: 🏗️ Build du frontend avec Vite
         run: |
-          cd frontend
+          cd admin-dashboard
           npm run build
 
       - name: 📤 Sauvegarder le build comme artefact temporaire
