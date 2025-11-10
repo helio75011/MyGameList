@@ -25,28 +25,18 @@ jobs:
           cd admin-dashboard
           npm ci
 
-      - name: 🏗️ Build du frontend avec Vite
-        env:
-            TSC_COMPILE_ON_ERROR: true
+      - name: 🏗️ Build du frontend avec Vite (ignorer erreurs TypeScript)
         run: |
           cd admin-dashboard
-          npx tsc --noEmit || true
-          npm run build --if-present || true
-
-      - name: vérifier la présence du dossier dist
-        run: |
-          cd admin-dashboard
-          ls -la
-          ls -R dist || echo "dist introuvable, le build à échoué"
-
-      - name: vérifier le dossier avant l'upload
-        run: ls -R admin-dashboard/dist || echo "dossier introuvable hélio"
+          npx tsc --noEmit || echo "⚠️ Erreurs TypeScript ignorées"
+          npm exec vite build
 
       - name: 📤 Sauvegarder le build comme artefact temporaire
         uses: actions/upload-artifact@v4
         with:
           name: vite-build
           path: admin-dashboard/dist
+
 
   # ============================
   # 🚀 Étape 2 : Déploiement du Frontend sur le VPS
