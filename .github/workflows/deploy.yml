@@ -22,7 +22,7 @@ jobs:
 
       - name: 📦 Installer les dépendances du frontend
         run: |
-          cd frontend
+          cd admin-dashboard
           npm ci
 
       - name: 🏗️ Build du frontend avec Vite
