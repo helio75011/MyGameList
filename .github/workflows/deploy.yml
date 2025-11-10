@@ -68,14 +68,11 @@ jobs:
 
       - name: 📦 Déployer le frontend via rsync
         run: |
-          rsync -avz -e "ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no" \
-          dist/ \
-          ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PATH_FRONT }}
+          rsync -avz -e "ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no" dist/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PATH_FRONT }}
 
       - name: 🔁 Relancer le service frontend avec PM2
         run: |
-          ssh -i /tmp/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
-          "pm2 reload frontend || pm2 start 'npx serve -s ${{ secrets.VPS_PATH_FRONT }}' --name frontend"
+          ssh -i /tmp/deploy_key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "pm2 reload frontend || pm2 start 'npx serve -s ${{ secrets.VPS_PATH_FRONT }}' --name frontend"
 
   # ============================
   # ⚙️ Étape 3 : Déploiement du Backend sur le VPS
@@ -94,9 +91,7 @@ jobs:
 
       - name: 📦 Déployer le backend via rsync
         run: |
-          rsync -avz -e "ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no" \
-          backend/ \
-          ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PATH_BACK }}
+          rsync -avz -e "ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no" backend/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PATH_BACK }}
 
       - name: 🔁 Installer dépendances & redémarrer le backend via PM2
         run: |
