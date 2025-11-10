@@ -60,6 +60,12 @@ jobs:
           echo "${{ secrets.VPS_KEY }}" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
 
+      - name: Debug vérifier les secrets
+        run: |
+          echo "USER=${{ secrets.VPS_USER }}"
+          echo "HOST=${{ secrets.VPS_HOST }}"
+          echo "PATH=${{ secrets.VPS_PATH_BACK }}"
+
       - name: 📦 Déployer le frontend via rsync
         run: |
           rsync -avz -e "ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no" \
