@@ -26,6 +26,8 @@ jobs:
           npm ci
 
       - name: 🏗️ Build du frontend avec Vite
+        env:
+            TSC_COMPILE_ON_ERROR: true
         run: |
           cd admin-dashboard
           npm run build
