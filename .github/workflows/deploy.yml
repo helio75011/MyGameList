@@ -33,6 +33,12 @@ jobs:
           npx tsc --noEmit || true
           npm run build --if-present || true
 
+      - name: vérifier la présence du dossier dist
+        run: |
+          cd admin-dashboard
+          ls -la
+          ls -R dist || echo "dist introuvable, le build à échoué"
+
       - name: vérifier le dossier avant l'upload
         run: ls -R admin-dashboard/dist || echo "dossier introuvable hélio"
 
